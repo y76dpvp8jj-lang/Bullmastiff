@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="Bullmastiff" />
+<title>Bullmastiff</title>
+<style>
+  :root{
+    --black:#0f0f0f;
+    --dark-grey:#2b2b2b;
+    --mid-grey:#8a8a8a;
+    --light-grey:#d8d6d0;
+    --off-white:#f5f3ee;
+    --white:#ffffff;
+    --input-bg:#eceae4;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--off-white);color:var(--black);}
+  body{
+    font-family:Arial,Helvetica,sans-serif;
+    padding:calc(16px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom));
+    max-width:480px;
+    margin:0 auto;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  input{-webkit-user-select:text;user-select:text;}
+  input::placeholder{color:var(--mid-grey);}
+  input:focus{outline:2px solid var(--black);outline-offset:1px;}
+  button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  button:focus-visible{outline:2px solid var(--black);outline-offset:2px;}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;}
+  .kicker{font-size:11px;color:var(--mid-grey);letter-spacing:1px;margin-bottom:2px;}
+  h1{font-size:26px;font-weight:800;margin:0;letter-spacing:1px;}
+  .save-status{font-size:11px;color:var(--mid-grey);min-height:14px;}
+
+  .top-nav{display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--light-grey);padding-bottom:12px;}
+  .nav-btn{flex:1;padding:9px 0;border:1px solid var(--dark-grey);background:var(--off-white);color:var(--dark-grey);font-size:13px;font-weight:600;border-radius:4px;}
+  .nav-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+
+  .phase-row{display:flex;gap:8px;margin-bottom:10px;}
+  .phase-btn{flex:1;padding:8px 0;border:1px solid var(--mid-grey);background:var(--white);color:var(--dark-grey);font-size:13px;font-weight:600;border-radius:4px;}
+  .phase-btn.active{background:var(--dark-grey);color:var(--white);border-color:var(--dark-grey);}
+
+  .lift-row{display:flex;gap:6px;margin-bottom:14px;}
+  .lift-btn{flex:1;padding:7px 0;border:1px solid var(--light-grey);background:var(--white);color:var(--dark-grey);font-size:12.5px;border-radius:4px;}
+  .lift-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+
+  .week-picker{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+  .wave-group{display:flex;gap:6px;}
+  .week-pill{flex:1;padding:8px 0;border:1px solid var(--light-grey);background:var(--white);color:var(--dark-grey);font-size:12px;font-weight:600;border-radius:4px;}
+  .week-pill.active{background:var(--black);color:var(--white);border-color:var(--black);}
+
+  .card{background:var(--white);border:1px solid var(--light-grey);border-radius:8px;padding:16px;}
+  .week-heading{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--light-grey);}
+  .week-wave{font-size:16px;font-weight:800;}
+  .week-prog{font-size:12px;color:var(--mid-grey);margin-top:2px;}
+
+  .block{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--light-grey);}
+  .block:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+  .block-label{font-size:11px;font-weight:700;color:var(--mid-grey);letter-spacing:0.5px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+  .edit-name-btn{font-size:10px;font-weight:600;color:var(--mid-grey);background:none;border:1px solid var(--light-grey);border-radius:3px;padding:2px 6px;text-transform:none;letter-spacing:0;}
+
+  .main-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .main-target{font-size:18px;font-weight:700;}
+  .pct-note{font-size:11.5px;color:var(--mid-grey);margin-top:2px;}
+  .weight-display{font-size:28px;font-weight:800;letter-spacing:-0.5px;}
+
+  .field-label{display:block;font-size:12.5px;color:var(--dark-grey);margin-top:6px;}
+  input[type=number],input[type=text]{
+    display:block;width:100%;margin-top:4px;padding:9px 10px;font-size:15px;
+    border:1px solid var(--mid-grey);border-radius:4px;background:var(--input-bg);color:var(--black);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+
+  .acc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;}
+  .acc-info{flex:1;}
+  .acc-name-edit{width:100%;font-size:13.5px;font-weight:600;border:1px solid transparent;background:transparent;padding:2px 0;}
+  .acc-name-edit:focus{border:1px solid var(--mid-grey);background:var(--input-bg);border-radius:3px;padding:2px 4px;}
+  .acc-target{font-size:12px;color:var(--mid-grey);margin-top:1px;}
+  .acc-input{width:78px;padding:8px;font-size:14px;border:1px solid var(--mid-grey);border-radius:4px;background:var(--input-bg);color:var(--black);text-align:right;font-family:Arial,Helvetica,sans-serif;}
+
+  .var-name-edit{font-size:11px;font-weight:700;color:var(--mid-grey);letter-spacing:0.5px;border:1px solid transparent;background:transparent;padding:2px 4px 2px 0;text-transform:uppercase;width:auto;display:inline-block;margin:0;}
+  .var-name-edit:focus{border:1px solid var(--mid-grey);background:var(--input-bg);border-radius:3px;text-transform:none;}
+
+  .maxes-intro{font-size:13px;color:var(--mid-grey);margin-bottom:16px;line-height:1.5;}
+  .exercises-intro{font-size:13px;color:var(--mid-grey);margin-bottom:16px;line-height:1.5;}
+  .reset-btn{font-size:11px;color:var(--mid-grey);background:none;border:1px solid var(--light-grey);border-radius:3px;padding:4px 8px;margin-top:6px;}
+
+  .loading{display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--mid-grey);font-size:14px;}
+</style>
+</head>
+<body>
+<div id="root" class="loading">Loading Bullmastiff…</div>
+
+<script>
+/* ============================================================
+   PROGRAM DATA — extracted directly from Bullmastiff_Round_1.xlsx
+   (targets, %1RM, and progression rules — not editable, this is
+   the program structure itself)
+   ============================================================ */
+const PROGRAM = {"maxes":{"squat":100.0,"bench":75.0,"deadlift":150.0,"press":50.0,"ssb":90.0,"closegrip":75.0,"rdl":120.0,"btn":40.0,"pausesquat":90.0,"boardpress":75.0,"blockpull":160.0,"pinpress":50.0,"round":2.5},"base":{"squat":{"variationName":"SSB","accNames":["Split Squat","Leg Extension","Cable Row","Pulldown"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 1"},"mainTarget":"4x6+","mainInfo":{"kind":"pct","key":"squat","pct":0.7},"varTarget":"3x12","varInfo":{"kind":"pct","key":"ssb","pct":0.6},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[10.5,40.0,80.0,80.0]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 2"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"squat","targetReps":6},"varTarget":"4x12","varInfo":{"kind":"pct","key":"ssb","pct":0.6},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 3"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"squat","targetReps":6},"varTarget":"5x12","varInfo":{"kind":"pct","key":"ssb","pct":0.6},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 4"},"mainTarget":"4x5+","mainInfo":{"kind":"pct","key":"squat","pct":0.75},"varTarget":"3x10","varInfo":{"kind":"pct","key":"ssb","pct":0.65},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 5"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"squat","targetReps":5},"varTarget":"4x10","varInfo":{"kind":"pct","key":"ssb","pct":0.65},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 6"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"squat","targetReps":5},"varTarget":"5x10","varInfo":{"kind":"pct","key":"ssb","pct":0.65},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 7"},"mainTarget":"4x4+","mainInfo":{"kind":"pct","key":"squat","pct":0.8},"varTarget":"3x8","varInfo":{"kind":"pct","key":"ssb","pct":0.7},"accTargets":["2x6","2x10","2x6","2x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 8"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"squat","targetReps":4},"varTarget":"4x8","varInfo":{"kind":"pct","key":"ssb","pct":0.7},"accTargets":["3x6","3x10","3x6","3x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 9"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"squat","targetReps":4},"varTarget":"5x8","varInfo":{"kind":"pct","key":"ssb","pct":0.7},"accTargets":["4x6","4x10","4x6","4x10"],"accWeights":[null,null,null,null]}]},"bench":{"variationName":"Close Grip","accNames":["Incline DB Press","Incline DB Fly","Hammer Curl","Barbell Curl"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 1"},"mainTarget":"4x6+","mainInfo":{"kind":"pct","key":"bench","pct":0.7},"varTarget":"3x12","varInfo":{"kind":"pct","key":"closegrip","pct":0.6},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 2"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"bench","targetReps":6},"varTarget":"4x12","varInfo":{"kind":"pct","key":"closegrip","pct":0.6},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 3"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"bench","targetReps":6},"varTarget":"5x12","varInfo":{"kind":"pct","key":"closegrip","pct":0.6},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 4"},"mainTarget":"4x5+","mainInfo":{"kind":"pct","key":"bench","pct":0.75},"varTarget":"3x10","varInfo":{"kind":"pct","key":"closegrip","pct":0.65},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 5"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"bench","targetReps":5},"varTarget":"4x10","varInfo":{"kind":"pct","key":"closegrip","pct":0.65},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 6"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"bench","targetReps":5},"varTarget":"5x10","varInfo":{"kind":"pct","key":"closegrip","pct":0.65},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 7"},"mainTarget":"4x4+","mainInfo":{"kind":"pct","key":"bench","pct":0.8},"varTarget":"3x8","varInfo":{"kind":"pct","key":"closegrip","pct":0.7},"accTargets":["2x6","2x10","2x6","2x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 8"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"bench","targetReps":4},"varTarget":"4x8","varInfo":{"kind":"pct","key":"closegrip","pct":0.7},"accTargets":["3x6","3x10","3x6","3x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 9"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"bench","targetReps":4},"varTarget":"5x8","varInfo":{"kind":"pct","key":"closegrip","pct":0.7},"accTargets":["4x6","4x10","4x6","4x10"],"accWeights":[null,null,null,null]}]},"deadlift":{"variationName":"RDL","accNames":["Back Extensions","Hamstring Curl","Bent Row","Kelso Shrugs"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 1"},"mainTarget":"4x6+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.7},"varTarget":"3x12","varInfo":{"kind":"pct","key":"rdl","pct":0.6},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 2"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":6},"varTarget":"4x12","varInfo":{"kind":"pct","key":"rdl","pct":0.6},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 3"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":6},"varTarget":"5x12","varInfo":{"kind":"pct","key":"rdl","pct":0.6},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 4"},"mainTarget":"4x5+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.75},"varTarget":"3x10","varInfo":{"kind":"pct","key":"rdl","pct":0.65},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 5"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":5},"varTarget":"4x10","varInfo":{"kind":"pct","key":"rdl","pct":0.65},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 6"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":5},"varTarget":"5x10","varInfo":{"kind":"pct","key":"rdl","pct":0.65},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 7"},"mainTarget":"4x4+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.8},"varTarget":"3x8","varInfo":{"kind":"pct","key":"rdl","pct":0.7},"accTargets":["2x6","2x10","2x6","2x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 8"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":4},"varTarget":"4x8","varInfo":{"kind":"pct","key":"rdl","pct":0.7},"accTargets":["3x6","3x10","3x6","3x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 9"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":4},"varTarget":"5x8","varInfo":{"kind":"pct","key":"rdl","pct":0.7},"accTargets":["4x6","4x10","4x6","4x10"],"accWeights":[null,null,null,null]}]},"press":{"variationName":"Behind The Neck Press","accNames":["DB Shoulder Press","Lateral Raise","Overhead Extension","Rope Pressdown"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 1"},"mainTarget":"4x6+","mainInfo":{"kind":"pct","key":"press","pct":0.7},"varTarget":"3x12","varInfo":{"kind":"pct","key":"btn","pct":0.6},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 2"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"press","targetReps":6},"varTarget":"4x12","varInfo":{"kind":"pct","key":"btn","pct":0.6},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 3"},"mainTarget":"4x6+","mainInfo":{"kind":"progression","key":"press","targetReps":6},"varTarget":"5x12","varInfo":{"kind":"pct","key":"btn","pct":0.6},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 4"},"mainTarget":"4x5+","mainInfo":{"kind":"pct","key":"press","pct":0.75},"varTarget":"3x10","varInfo":{"kind":"pct","key":"btn","pct":0.65},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 5"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"press","targetReps":5},"varTarget":"4x10","varInfo":{"kind":"pct","key":"btn","pct":0.65},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 6"},"mainTarget":"4x5+","mainInfo":{"kind":"progression","key":"press","targetReps":5},"varTarget":"5x10","varInfo":{"kind":"pct","key":"btn","pct":0.65},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 7"},"mainTarget":"4x4+","mainInfo":{"kind":"pct","key":"press","pct":0.8},"varTarget":"3x8","varInfo":{"kind":"pct","key":"btn","pct":0.7},"accTargets":["2x6","2x10","2x6","2x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 8"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"press","targetReps":4},"varTarget":"4x8","varInfo":{"kind":"pct","key":"btn","pct":0.7},"accTargets":["3x6","3x10","3x6","3x10"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 9"},"mainTarget":"4x4+","mainInfo":{"kind":"progression","key":"press","targetReps":4},"varTarget":"5x8","varInfo":{"kind":"pct","key":"btn","pct":0.7},"accTargets":["4x6","4x10","4x6","4x10"],"accWeights":[null,null,null,null]}]}},"peak":{"squat":{"variationName":"Pause Squat","accNames":["Split Squat","Leg Extension","Cable Row","Pulldown"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 10"},"mainTarget":"5x3+","mainInfo":{"kind":"pct","key":"squat","pct":0.85},"varTarget":"4x6","varInfo":{"kind":"pct","key":"pausesquat","pct":0.75},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 11"},"mainTarget":"3x3+","mainInfo":{"kind":"progression","key":"squat","targetReps":3},"varTarget":"3x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 12"},"mainTarget":"1x3+","mainInfo":{"kind":"progression","key":"squat","targetReps":3},"varTarget":"2x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 13"},"mainTarget":"5x2+","mainInfo":{"kind":"pct","key":"squat","pct":0.88},"varTarget":"4x5","varInfo":{"kind":"pct","key":"pausesquat","pct":0.8},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 14"},"mainTarget":"3x2+","mainInfo":{"kind":"progression","key":"squat","targetReps":2},"varTarget":"3x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 15"},"mainTarget":"1x2+","mainInfo":{"kind":"progression","key":"squat","targetReps":2},"varTarget":"2x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 16"},"mainTarget":"5x1+","mainInfo":{"kind":"pct","key":"squat","pct":0.92},"varTarget":"4x4","varInfo":{"kind":"pct","key":"pausesquat","pct":0.85},"accTargets":["2x6","2x9","2x6","2x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 17"},"mainTarget":"3x1+","mainInfo":{"kind":"progression","key":"squat","targetReps":1},"varTarget":"3x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x6","3x9","3x6","3x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 18"},"mainTarget":"1x1+","mainInfo":{"kind":"progression","key":"squat","targetReps":1},"varTarget":"2x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x6","4x9","4x6","4x9"],"accWeights":[null,null,null,null]}]},"bench":{"variationName":"Board Press","accNames":["Incline DB Press","Incline DB Fly","Hammer Curl","Barbell Curl"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 10"},"mainTarget":"5x3+","mainInfo":{"kind":"pct","key":"bench","pct":0.85},"varTarget":"4x6","varInfo":{"kind":"pct","key":"boardpress","pct":0.75},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 11"},"mainTarget":"3x3+","mainInfo":{"kind":"progression","key":"bench","targetReps":3},"varTarget":"3x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 12"},"mainTarget":"1x3+","mainInfo":{"kind":"progression","key":"bench","targetReps":3},"varTarget":"2x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 13"},"mainTarget":"5x2+","mainInfo":{"kind":"pct","key":"bench","pct":0.88},"varTarget":"4x5","varInfo":{"kind":"pct","key":"boardpress","pct":0.8},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 14"},"mainTarget":"3x2+","mainInfo":{"kind":"progression","key":"bench","targetReps":2},"varTarget":"3x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 15"},"mainTarget":"1x2+","mainInfo":{"kind":"progression","key":"bench","targetReps":2},"varTarget":"2x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 16"},"mainTarget":"5x1+","mainInfo":{"kind":"pct","key":"bench","pct":0.92},"varTarget":"4x4","varInfo":{"kind":"pct","key":"boardpress","pct":0.85},"accTargets":["2x6","2x9","2x6","2x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 17"},"mainTarget":"3x1+","mainInfo":{"kind":"progression","key":"bench","targetReps":1},"varTarget":"3x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x6","3x9","3x6","3x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 18"},"mainTarget":"1x1+","mainInfo":{"kind":"progression","key":"bench","targetReps":1},"varTarget":"2x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x6","4x9","4x6","4x9"],"accWeights":[null,null,null,null]}]},"deadlift":{"variationName":"Block Pull","accNames":["Back Extensions","Hamstring Curl","Bent Row","Kelso Shrugs"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 10"},"mainTarget":"5x3+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.85},"varTarget":"4x6","varInfo":{"kind":"pct","key":"blockpull","pct":0.75},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 11"},"mainTarget":"3x3+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":3},"varTarget":"3x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 12"},"mainTarget":"1x3+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":3},"varTarget":"2x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 13"},"mainTarget":"5x2+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.88},"varTarget":"4x5","varInfo":{"kind":"pct","key":"blockpull","pct":0.8},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 14"},"mainTarget":"3x2+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":2},"varTarget":"3x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 15"},"mainTarget":"1x2+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":2},"varTarget":"2x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 16"},"mainTarget":"5x1+","mainInfo":{"kind":"pct","key":"deadlift","pct":0.92},"varTarget":"4x4","varInfo":{"kind":"pct","key":"blockpull","pct":0.85},"accTargets":["2x6","2x9","2x6","2x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 17"},"mainTarget":"3x1+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":1},"varTarget":"3x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x6","3x9","3x6","3x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 18"},"mainTarget":"1x1+","mainInfo":{"kind":"progression","key":"deadlift","targetReps":1},"varTarget":"2x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x6","4x9","4x6","4x9"],"accWeights":[null,null,null,null]}]},"press":{"variationName":"Seated Pin Press","accNames":["DB Shoulder Press","Lateral Raise","Overhead Extension","Rope Pressdown"],"weeks":[{"label":{"wave":"Wave 1 \u00b7 Wk 1","prog":"Program Wk 10"},"mainTarget":"5x3+","mainInfo":{"kind":"pct","key":"press","pct":0.85},"varTarget":"4x6","varInfo":{"kind":"pct","key":"pinpress","pct":0.75},"accTargets":["2x10","2x15","2x10","2x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 2","prog":"Program Wk 11"},"mainTarget":"3x3+","mainInfo":{"kind":"progression","key":"press","targetReps":3},"varTarget":"3x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x10","3x15","3x10","3x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 1 \u00b7 Wk 3","prog":"Program Wk 12"},"mainTarget":"1x3+","mainInfo":{"kind":"progression","key":"press","targetReps":3},"varTarget":"2x6","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x10","4x15","4x10","4x15"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 1","prog":"Program Wk 13"},"mainTarget":"5x2+","mainInfo":{"kind":"pct","key":"press","pct":0.88},"varTarget":"4x5","varInfo":{"kind":"pct","key":"pinpress","pct":0.8},"accTargets":["2x8","2x12","2x8","2x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 2","prog":"Program Wk 14"},"mainTarget":"3x2+","mainInfo":{"kind":"progression","key":"press","targetReps":2},"varTarget":"3x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x8","3x12","3x8","3x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 2 \u00b7 Wk 3","prog":"Program Wk 15"},"mainTarget":"1x2+","mainInfo":{"kind":"progression","key":"press","targetReps":2},"varTarget":"2x5","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x8","4x12","4x8","4x12"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 1","prog":"Program Wk 16"},"mainTarget":"5x1+","mainInfo":{"kind":"pct","key":"press","pct":0.92},"varTarget":"4x4","varInfo":{"kind":"pct","key":"pinpress","pct":0.85},"accTargets":["2x6","2x9","2x6","2x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 2","prog":"Program Wk 17"},"mainTarget":"3x1+","mainInfo":{"kind":"progression","key":"press","targetReps":1},"varTarget":"3x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["3x6","3x9","3x6","3x9"],"accWeights":[null,null,null,null]},{"label":{"wave":"Wave 3 \u00b7 Wk 3","prog":"Program Wk 18"},"mainTarget":"1x1+","mainInfo":{"kind":"progression","key":"press","targetReps":1},"varTarget":"2x4","varInfo":{"kind":"mult_prev","pct":1.05},"accTargets":["4x6","4x9","4x6","4x9"],"accWeights":[null,null,null,null]}]}}};
+
+const LIFT_ORDER = ["squat","bench","deadlift","press"];
+const LIFT_LABEL = {squat:"Squat",bench:"Bench",deadlift:"Deadlift",press:"Press"};
+const PHASES = ["base","peak"];
+const PHASE_LABEL = {base:"Base Phase", peak:"Peak Phase"};
+
+const MAXES_FIELDS = [
+  {key:"squat",label:"Squat",group:"Main lifts"},
+  {key:"bench",label:"Bench Press",group:"Main lifts"},
+  {key:"deadlift",label:"Deadlift",group:"Main lifts"},
+  {key:"press",label:"Overhead Press",group:"Main lifts"},
+  {key:"ssb",label:"SSB",group:"Base variations"},
+  {key:"closegrip",label:"Close Grip",group:"Base variations"},
+  {key:"rdl",label:"RDL",group:"Base variations"},
+  {key:"btn",label:"Behind The Neck Press",group:"Base variations"},
+  {key:"pausesquat",label:"Pause Squat",group:"Peak variations"},
+  {key:"boardpress",label:"Board Press",group:"Peak variations"},
+  {key:"blockpull",label:"Block Pull",group:"Peak variations"},
+  {key:"pinpress",label:"Seated Pin Press",group:"Peak variations"},
+];
+
+const mround = (value, increment) => {
+  if (typeof value !== "number" || isNaN(value)) return null;
+  return Math.round(value / increment) * increment;
+};
+const fmtKg = (v) => (v===null||v===undefined||isNaN(v)) ? "—" : (v + " kg");
+
+/* ============================================================
+   WEIGHT COMPUTATION ENGINE — mirrors the workbook formulas
+   ============================================================ */
+function computeMainWeight(phase, lift, weekIdx, maxes, amraps){
+  const week = PROGRAM[phase][lift].weeks[weekIdx];
+  const info = week.mainInfo;
+  if (info.kind === "pct"){
+    return mround(maxes[info.key]*info.pct, maxes.round);
+  }
+  const prevWeight = computeMainWeight(phase, lift, weekIdx-1, maxes, amraps);
+  const prevAmrap = amraps[weekIdx-1];
+  if (prevAmrap===null||prevAmrap===undefined||prevAmrap===""){
+    return prevWeight;
+  }
+  const delta = mround(maxes[info.key]*0.01*(Number(prevAmrap)-info.targetReps), maxes.round);
+  return prevWeight + delta;
+}
+function computeVarWeight(phase, lift, weekIdx, maxes){
+  const week = PROGRAM[phase][lift].weeks[weekIdx];
+  const info = week.varInfo;
+  if (info.kind === "pct"){
+    return mround(maxes[info.key]*info.pct, maxes.round);
+  }
+  const prevWeight = computeVarWeight(phase, lift, weekIdx-1, maxes);
+  return mround(prevWeight*info.pct, maxes.round);
+}
+
+/* ============================================================
+   STATE + PERSISTENCE (localStorage — fully offline, no login)
+   ============================================================ */
+const STORAGE_KEY = "bullmastiff-state-v1";
+
+function defaultExerciseNames(){
+  const names = {};
+  PHASES.forEach(phase=>{
+    names[phase] = {};
+    LIFT_ORDER.forEach(lift=>{
+      names[phase][lift] = {
+        variation: PROGRAM[phase][lift].variationName,
+        acc: PROGRAM[phase][lift].accNames.slice(),
+      };
+    });
+  });
+  return names;
+}
+
+function defaultState(){
+  return {
+    maxes: Object.assign({}, PROGRAM.maxes),
+    amraps: {},
+    accLogs: {},
+    times: {},
+    exerciseNames: defaultExerciseNames(),
+  };
+}
+
+function ensureLiftArrays(state, phase, lift){
+  if (!state.amraps[phase]) state.amraps[phase] = {};
+  if (!state.amraps[phase][lift]) state.amraps[phase][lift] = Array(9).fill("");
+  if (!state.accLogs[phase]) state.accLogs[phase] = {};
+  if (!state.accLogs[phase][lift]){
+    state.accLogs[phase][lift] = PROGRAM[phase][lift].weeks.map(w=>
+      w.accWeights.map(v => v===null ? "" : String(v))
+    );
+  }
+  if (!state.times[phase]) state.times[phase] = {};
+  if (!state.times[phase][lift]) state.times[phase][lift] = Array(9).fill("");
+  if (!state.exerciseNames) state.exerciseNames = defaultExerciseNames();
+  if (!state.exerciseNames[phase]) state.exerciseNames[phase] = {};
+  if (!state.exerciseNames[phase][lift]){
+    state.exerciseNames[phase][lift] = {
+      variation: PROGRAM[phase][lift].variationName,
+      acc: PROGRAM[phase][lift].accNames.slice(),
+    };
+  }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    const merged = defaultState();
+    merged.maxes = Object.assign(merged.maxes, parsed.maxes||{});
+    merged.amraps = parsed.amraps || {};
+    merged.accLogs = parsed.accLogs || {};
+    merged.times = parsed.times || {};
+    if (parsed.exerciseNames){
+      PHASES.forEach(phase=>{
+        LIFT_ORDER.forEach(lift=>{
+          if (parsed.exerciseNames[phase] && parsed.exerciseNames[phase][lift]){
+            merged.exerciseNames[phase][lift] = parsed.exerciseNames[phase][lift];
+          }
+        });
+      });
+    }
+    return merged;
+  }catch(e){
+    return defaultState();
+  }
+}
+
+let state = loadState();
+let saveTimer = null;
+function persist(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showSaveStatus("Saved");
+  }catch(e){
+    showSaveStatus("Save failed");
+  }
+}
+function showSaveStatus(msg){
+  const el = document.getElementById("save-status");
+  if (!el) return;
+  el.textContent = msg;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{ if(el) el.textContent=""; }, 1200);
+}
+
+/* ============================================================
+   VIEW STATE (not persisted)
+   ============================================================ */
+let view = "program"; // 'program' | 'maxes' | 'exercises'
+let phase = "base";
+let lift = "squat";
+let weekIdx = 0;
+let exercisesEditPhase = "base";
+let exercisesEditLift = "squat";
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function el(tag, attrs, children){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    if (k === "class") e.className = attrs[k];
+    else if (k === "text") e.textContent = attrs[k];
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  (children||[]).forEach(c=>{ if(c) e.appendChild(c); });
+  return e;
+}
+
+function render(){
+  ensureLiftArrays(state, phase, lift);
+  const root = document.getElementById("root");
+  root.className = "";
+  root.innerHTML = "";
+
+  // header
+  const header = el("header",null,[
+    el("div",null,[
+      el("div",{class:"kicker",text:"Alexander Bromley"}),
+      el("h1",{text:"BULLMASTIFF"}),
+    ]),
+    el("div",{class:"save-status",id:"save-status"}),
+  ]);
+  root.appendChild(header);
+
+  // top nav
+  const nav = el("nav",{class:"top-nav"});
+  [["program","Program"],["maxes","Maxes"],["exercises","Exercises"]].forEach(([key,label])=>{
+    nav.appendChild(el("button",{
+      class:"nav-btn"+(view===key?" active":""),
+      text:label,
+      onClick:()=>{ view=key; render(); }
+    }));
+  });
+  root.appendChild(nav);
+
+  if (view === "maxes"){
+    root.appendChild(renderMaxesScreen());
+  } else if (view === "exercises"){
+    root.appendChild(renderExercisesScreen());
+  } else {
+    root.appendChild(renderPhaseRow());
+    root.appendChild(renderLiftRow());
+    root.appendChild(renderWeekPicker());
+    root.appendChild(renderProgramCard());
+  }
+}
+
+function renderPhaseRow(){
+  const row = el("div",{class:"phase-row"});
+  PHASES.forEach(p=>{
+    row.appendChild(el("button",{
+      class:"phase-btn"+(phase===p?" active":""),
+      text:PHASE_LABEL[p],
+      onClick:()=>{ phase=p; weekIdx=0; render(); }
+    }));
+  });
+  return row;
+}
+
+function renderLiftRow(){
+  const row = el("div",{class:"lift-row"});
+  LIFT_ORDER.forEach(l=>{
+    row.appendChild(el("button",{
+      class:"lift-btn"+(lift===l?" active":""),
+      text:LIFT_LABEL[l],
+      onClick:()=>{ lift=l; weekIdx=0; render(); }
+    }));
+  });
+  return row;
+}
+
+function renderWeekPicker(){
+  const weeks = PROGRAM[phase][lift].weeks;
+  const wrap = el("div",{class:"week-picker"});
+  for (let wi=0; wi<3; wi++){
+    const group = el("div",{class:"wave-group"});
+    for (let i=0; i<3; i++){
+      const idx = wi*3+i;
+      const w = weeks[idx];
+      group.appendChild(el("button",{
+        class:"week-pill"+(idx===weekIdx?" active":""),
+        text:w.label.prog.replace("Program ",""),
+        onClick:()=>{ weekIdx=idx; render(); }
+      }));
+    }
+    wrap.appendChild(group);
+  }
+  return wrap;
+}
+
+function renderProgramCard(){
+  const week = PROGRAM[phase][lift].weeks[weekIdx];
+  const names = state.exerciseNames[phase][lift];
+  const amraps = state.amraps[phase][lift];
+  const accLog = state.accLogs[phase][lift][weekIdx];
+  const timeLog = state.times[phase][lift][weekIdx];
+
+  const mainWeight = computeMainWeight(phase, lift, weekIdx, state.maxes, amraps);
+  const varWeight = computeVarWeight(phase, lift, weekIdx, state.maxes);
+
+  const card = el("div",{class:"card"});
+
+  card.appendChild(el("div",{class:"week-heading"},[
+    el("div",{class:"week-wave",text:week.label.wave}),
+    el("div",{class:"week-prog",text:week.label.prog}),
+  ]));
+
+  // MAIN LIFT
+  const mainBlock = el("section",{class:"block"});
+  mainBlock.appendChild(el("div",{class:"block-label",text:"Main — "+LIFT_LABEL[lift]}));
+  const mainRow = el("div",{class:"main-row"},[
+    el("div",null,[
+      el("div",{class:"main-target",text:week.mainTarget}),
+      week.mainInfo.kind==="pct"
+        ? el("div",{class:"pct-note",text:Math.round(week.mainInfo.pct*100)+"% 1RM"})
+        : el("div",{class:"pct-note",text:"auto from last week's AMRAP"}),
+    ]),
+    el("div",{class:"weight-display",text:fmtKg(mainWeight)}),
+  ]);
+  mainBlock.appendChild(mainRow);
+  const amrapLabel = el("label",{class:"field-label",text:"AMRAP reps (last set)"});
+  const amrapInput = el("input",{type:"number",inputmode:"numeric",placeholder:"reps"});
+  amrapInput.value = amraps[weekIdx] || "";
+  amrapInput.addEventListener("input",(e)=>{
+    state.amraps[phase][lift][weekIdx] = e.target.value;
+    persist();
+    // live-update displayed weight for subsequent weeks without full re-render jank
+  });
+  amrapInput.addEventListener("change", ()=>{ persist(); });
+  amrapLabel.appendChild(amrapInput);
+  mainBlock.appendChild(amrapLabel);
+  card.appendChild(mainBlock);
+
+  // VARIATION
+  const varBlock = el("section",{class:"block"});
+  varBlock.appendChild(el("div",{class:"block-label",text:"Variation — "+names.variation}));
+  const varRow = el("div",{class:"main-row"},[
+    el("div",null,[
+      el("div",{class:"main-target",text:week.varTarget}),
+      week.varInfo.kind==="pct"
+        ? el("div",{class:"pct-note",text:Math.round(week.varInfo.pct*100)+"% 1RM"})
+        : el("div",{class:"pct-note",text:"+5% on last week"}),
+    ]),
+    el("div",{class:"weight-display",text:fmtKg(varWeight)}),
+  ]);
+  varBlock.appendChild(varRow);
+  card.appendChild(varBlock);
+
+  // ACCESSORIES
+  const accBlock = el("section",{class:"block"});
+  accBlock.appendChild(el("div",{class:"block-label",text:"Accessories"}));
+  names.acc.forEach((name,i)=>{
+    const row = el("div",{class:"acc-row"});
+    const info = el("div",{class:"acc-info"},[
+      el("div",{class:"acc-target",text:week.accTargets[i]}),
+    ]);
+    const nameEl = el("div",{class:"acc-name",text:name});
+    nameEl.style.fontSize = "13.5px";
+    nameEl.style.fontWeight = "600";
+    info.insertBefore(nameEl, info.firstChild);
+    const input = el("input",{class:"acc-input",type:"text",inputmode:"decimal",placeholder:"kg"});
+    input.value = accLog[i] || "";
+    input.addEventListener("input",(e)=>{
+      state.accLogs[phase][lift][weekIdx][i] = e.target.value;
+    });
+    input.addEventListener("change", persist);
+    row.appendChild(info);
+    row.appendChild(input);
+    accBlock.appendChild(row);
+  });
+  card.appendChild(accBlock);
+
+  // TIME
+  const timeBlock = el("section",{class:"block"});
+  timeBlock.appendChild(el("div",{class:"block-label",text:"Session time"}));
+  const timeInput = el("input",{type:"text",placeholder:"HH:MM"});
+  timeInput.value = timeLog || "";
+  timeInput.addEventListener("input",(e)=>{
+    state.times[phase][lift][weekIdx] = e.target.value;
+  });
+  timeInput.addEventListener("change", persist);
+  timeBlock.appendChild(timeInput);
+  card.appendChild(timeBlock);
+
+  return card;
+}
+
+function renderMaxesScreen(){
+  const card = el("div",{class:"card"});
+  card.appendChild(el("div",{class:"maxes-intro",
+    text:"These 1RMs drive every weight in the program. Update them any time — the whole plan recalculates."}));
+  const groups = ["Main lifts","Base variations","Peak variations"];
+  groups.forEach(g=>{
+    const block = el("section",{class:"block"});
+    block.appendChild(el("div",{class:"block-label",text:g}));
+    MAXES_FIELDS.filter(f=>f.group===g).forEach(f=>{
+      const label = el("label",{class:"field-label",text:f.label});
+      const input = el("input",{type:"number",inputmode:"decimal"});
+      input.value = state.maxes[f.key] ?? "";
+      input.addEventListener("input",(e)=>{
+        state.maxes[f.key] = e.target.value===""?"":Number(e.target.value);
+      });
+      input.addEventListener("change", persist);
+      label.appendChild(input);
+      block.appendChild(label);
+    });
+    card.appendChild(block);
+  });
+  const settingsBlock = el("section",{class:"block"});
+  settingsBlock.appendChild(el("div",{class:"block-label",text:"Settings"}));
+  const roundLabel = el("label",{class:"field-label",text:"Round weights to nearest (kg)"});
+  const roundInput = el("input",{type:"number",inputmode:"decimal",step:"0.5"});
+  roundInput.value = state.maxes.round ?? "";
+  roundInput.addEventListener("input",(e)=>{
+    state.maxes.round = e.target.value===""?"":Number(e.target.value);
+  });
+  roundInput.addEventListener("change", persist);
+  roundLabel.appendChild(roundInput);
+  settingsBlock.appendChild(roundLabel);
+  card.appendChild(settingsBlock);
+  return card;
+}
+
+function renderExercisesScreen(){
+  const wrap = document.createDocumentFragment ? el("div",null) : el("div",null);
+
+  const card = el("div",{class:"card"});
+  card.appendChild(el("div",{class:"exercises-intro",
+    text:"Rename the variation lift or accessories for any phase — handy if you swap movements cycle to cycle. This only changes labels, not the sets/reps/percentages."}));
+
+  // phase/lift selector for editing
+  const phaseRow = el("div",{class:"phase-row"});
+  PHASES.forEach(p=>{
+    phaseRow.appendChild(el("button",{
+      class:"phase-btn"+(exercisesEditPhase===p?" active":""),
+      text:PHASE_LABEL[p],
+      onClick:()=>{ exercisesEditPhase=p; render(); }
+    }));
+  });
+  card.appendChild(phaseRow);
+
+  const liftRow = el("div",{class:"lift-row"});
+  LIFT_ORDER.forEach(l=>{
+    liftRow.appendChild(el("button",{
+      class:"lift-btn"+(exercisesEditLift===l?" active":""),
+      text:LIFT_LABEL[l],
+      onClick:()=>{ exercisesEditLift=l; render(); }
+    }));
+  });
+  card.appendChild(liftRow);
+
+  const names = state.exerciseNames[exercisesEditPhase][exercisesEditLift];
+
+  const varBlock = el("section",{class:"block"});
+  varBlock.appendChild(el("div",{class:"block-label",text:"Variation lift"}));
+  const varInput = el("input",{type:"text"});
+  varInput.value = names.variation;
+  varInput.addEventListener("input",(e)=>{
+    state.exerciseNames[exercisesEditPhase][exercisesEditLift].variation = e.target.value;
+  });
+  varInput.addEventListener("change", persist);
+  varBlock.appendChild(varInput);
+  card.appendChild(varBlock);
+
+  const accBlock = el("section",{class:"block"});
+  accBlock.appendChild(el("div",{class:"block-label",text:"Accessories"}));
+  names.acc.forEach((name,i)=>{
+    const label = el("label",{class:"field-label",text:"Accessory "+(i+1)});
+    const input = el("input",{type:"text"});
+    input.value = name;
+    input.addEventListener("input",(e)=>{
+      state.exerciseNames[exercisesEditPhase][exercisesEditLift].acc[i] = e.target.value;
+    });
+    input.addEventListener("change", persist);
+    label.appendChild(input);
+    accBlock.appendChild(label);
+  });
+  card.appendChild(accBlock);
+
+  const resetBlock = el("section",{class:"block"});
+  const resetBtn = el("button",{class:"reset-btn",text:"Reset this day to original names"});
+  resetBtn.addEventListener("click",()=>{
+    state.exerciseNames[exercisesEditPhase][exercisesEditLift] = {
+      variation: PROGRAM[exercisesEditPhase][exercisesEditLift].variationName,
+      acc: PROGRAM[exercisesEditPhase][exercisesEditLift].accNames.slice(),
+    };
+    persist();
+    render();
+  });
+  resetBlock.appendChild(resetBtn);
+  card.appendChild(resetBlock);
+
+  wrap.appendChild(card);
+  return wrap;
+}
+
+render();
+</script>
+</body>
+</html>
